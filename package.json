@@ -1,5 +1,5 @@
 {
-  "name": "party-games",
+  "name": "lla-games-api",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -19,7 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "package:windows": "rimraf package && npm run build && mkdir package && xcopy /S /I /Q dist package && copy package.json package"
+    "package:windows": "rimraf package && npm run build && mkdir package && xcopy /S /I /Q dist package && copy package.json package && copy dic.txt package && copy dicv2.txt package && xcopy /S /I /Q dictionnaire package"
   },
   "dependencies": {
     "@nestjs/common": "^7.6.15",
