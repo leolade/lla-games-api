@@ -32,3 +32,8 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+/package/
+/dist/
+/node_modules/
+/.idea/
+/package-lock.json
