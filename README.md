@@ -43,3 +43,6 @@ Pour pouvoir lancer le serveur, vous devez disposez des variable d'environnement
 
 `JWS_SECRET_KEY`
 Avec comme valeur une chaine de caractères permettant d'encoder le mot de passe d'un utilisateur. Peut faire jusqu'a 32 caractères alphanumériques
+
+## Demo
+http://www.game.leoladevie.fr/mot/daily
