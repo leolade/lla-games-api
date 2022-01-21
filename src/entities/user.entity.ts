@@ -1,15 +1,27 @@
+import { Column, Entity, Generated, OneToMany, PrimaryColumn } from 'typeorm';
+import { MotusPlayerRoundEntity } from './motus-player-round.entity';
 
 @Entity()
-export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+export class UserEntity {
+  @PrimaryColumn()
+  username: string;
 
   @Column()
-  firstName: string;
+  @Generated('uuid')
+  uuid: string;
 
   @Column()
-  lastName: string;
+  password: string;
 
-  @Column({ default: true })
-  isActive: boolean;
+  @Column({ nullable: true })
+  displayName: string;
+
+  @Column('boolean', { default: true })
+  administrator = false;
+
+  @OneToMany(
+    () => MotusPlayerRoundEntity,
+    (roundPlayed: MotusPlayerRoundEntity) => roundPlayed.player,
+  )
+  roundsPlayed: MotusPlayerRoundEntity[];
 }

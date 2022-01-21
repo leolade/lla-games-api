@@ -10,9 +10,6 @@ import { jwtConstants } from './constants';
       secret: jwtConstants.secret,
     }),
   ],
-  exports: [
-    PassportModule,
-    JwtModule
-  ]
+  exports: [PassportModule, JwtModule],
 })
 export class AuthModule {}

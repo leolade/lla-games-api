@@ -6,8 +6,7 @@ import { MotFacadeService } from './mot.facade.service';
 
 @Controller('mot')
 export class MotController {
-  constructor(private motFacadeService: MotFacadeService) {
-  }
+  constructor(private motFacadeService: MotFacadeService) {}
 
   @Get('random/:nbLettreMin/:nbLettreMax/:nbRandom')
   getRandomWordsWithSpecificLength(@Param() params): Observable<string[]> {
@@ -27,11 +26,7 @@ export class MotController {
 
   @Get('random/:nbRandom')
   getRandomWords(@Param() params): Observable<string[]> {
-    return this.motFacadeService.getRandomWords(
-      5,
-      9,
-      params.nbRandom,
-    );
+    return this.motFacadeService.getRandomWords(5, 9, params.nbRandom);
   }
 
   @Get('random')

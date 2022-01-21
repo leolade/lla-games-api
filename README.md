@@ -14,13 +14,13 @@ Prérequis
 Clonez le projet
 
 ```bash
-  git clone https://link-to-project
+  git clone https://github.com/leolade/lla-games-api.git
 ```
 
 En ligne de commande, rendez-vous dans le répertoire du projet
 
 ```bash
-  cd link-to-project
+  cd lla-games-api
 ```
 
 Installez les dépendances

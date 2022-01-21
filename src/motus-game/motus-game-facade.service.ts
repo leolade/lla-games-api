@@ -41,6 +41,7 @@ export class MotusGameFacadeService {
       }),
     ).pipe(
       switchMap((game: MotusGameEntity | undefined) => {
+        // Si on trouve la game du jour, alors on la renvoie, sinon on la crée avant de la renvoyer.
         return !!game
           ? of(this.motusGameBusinessService.gameEntityToDto(game))
           : this.motusGameBusinessService.createGame(

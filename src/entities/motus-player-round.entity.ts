@@ -1,17 +1,25 @@
-import { Column, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { MotusGameEntity } from './motus-game.entity';
+import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { MotusPlayerRoundPropositionEntity } from './motus-player-round-proposition.entity';
+import { MotusRoundEntity } from './motus-round.entity';
+import { UserEntity } from './user.entity';
 
-
-export class MotusRoundEntity {
+@Entity()
+export class MotusPlayerRoundEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  rangMot: number;
+  @OneToMany(
+    () => MotusPlayerRoundPropositionEntity,
+    (propostion: MotusPlayerRoundPropositionEntity) => propostion.round,
+  )
+  propositions: MotusPlayerRoundPropositionEntity[];
 
-  @Column()
-  mot: string;
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user.roundsPlayed)
+  player: UserEntity;
 
-  @ManyToOne(() => MotusGameEntity, (game: MotusGameEntity) => game.rounds)
-  game: MotusGameEntity;
+  @ManyToOne(
+    () => MotusRoundEntity,
+    (round: MotusRoundEntity) => round.roundsPlayed,
+  )
+  round: MotusRoundEntity;
 }

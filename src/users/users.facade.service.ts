@@ -1,16 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { hash, compare } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { ConnectUserDto } from 'lla-party-games-dto/dist/connect-user.dto';
 import { CreateUserDto } from 'lla-party-games-dto/dist/create-user.dto';
-import { from, Observable, of, throwError } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { from, Observable, throwError } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { Like, Repository } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
+
 @Injectable()
 export class UsersFacadeService {
   constructor(
-    @InjectRepository(UserEntity) private usersRepository: Repository<UserEntity>,
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>,
   ) {}
 
   hashPassword(password: string): Promise<string> {
@@ -52,12 +54,6 @@ export class UsersFacadeService {
     return '';
   }
 
-  private findUserByUsername(username: string): Promise<UserEntity | undefined> {
-    return this.usersRepository.findOne(undefined, {
-      where: { username: Like(`%${username}%`) },
-    });
-  }
-
   validate(username: string, password: string): Observable<UserEntity> {
     return from(this.findUserByUsername(username)).pipe(
       switchMap((user: UserEntity) => {
@@ -66,5 +62,13 @@ export class UsersFacadeService {
         );
       }),
     );
+  }
+
+  private findUserByUsername(
+    username: string,
+  ): Promise<UserEntity | undefined> {
+    return this.usersRepository.findOne(undefined, {
+      where: { username: Like(`%${username}%`) },
+    });
   }
 }

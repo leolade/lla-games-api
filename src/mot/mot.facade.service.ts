@@ -11,7 +11,7 @@ import {
 import { ValidateMotDto } from 'lla-party-games-dto/dist/validate-mot.dto';
 import path from 'path';
 import { createInterface, Interface } from 'readline';
-import { from, Observable, Observer, of } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
 import { NumberUtils } from 'type-script-utils-lla/dist/number.utils';
 import { StringUtils } from 'type-script-utils-lla/dist/string.utils';
 
@@ -22,18 +22,23 @@ export class MotFacadeService {
     nbLettreMax: number,
     nbWords: number,
   ): Observable<string[]> {
+    //On lit un fichier qui contient 1 mot par ligne
     const fileStream: ReadStream = createReadStream('dic.txt');
     const rl: Interface = createInterface({
       input: fileStream,
       crlfDelay: Infinity,
     });
 
+    //On lit chaque ligne une à une
     const mots: string[] = [];
     rl.on('line', (input) => {
+      // Si le mot correspond à nos critères, alors on l'ajoutes a notre préselection
       if (input.length >= nbLettreMin && input.length <= nbLettreMax) {
         mots.push(input);
       }
     });
+
+    // Quand on a fini de lire, alors on récupères des mots au hasard dans cette liste.
     return from(
       new Promise<string[]>((resolve, reject) => {
         rl.on('close', () => {
@@ -101,6 +106,7 @@ export class MotFacadeService {
       mot.toUpperCase(),
     )[0];
 
+    //On lit un fichier qui contient 1 mot par ligne
     const fileStream: ReadStream = createReadStream(
       `dictionnaire/${firstWordLetter}.txt`,
     );
@@ -110,15 +116,19 @@ export class MotFacadeService {
     });
 
     let find = false;
+    //On lit chaque ligne une à une
     rl.on('line', (input) => {
       if (
         StringUtils.removeDiacritics(mot.toUpperCase()).trim() ===
         StringUtils.removeDiacritics(input.toUpperCase()).trim()
       ) {
+        // Si on trouve notre mot, on s'arrête la.
         find = true;
         rl.close();
       }
     });
+
+    // On renvoi la valeur de si oui ou non le mot existe
     return from(
       new Promise<boolean>((resolve, reject) => {
         rl.on('close', () => {

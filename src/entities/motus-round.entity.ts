@@ -1,13 +1,30 @@
-import { Column, CreateDateColumn, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { MotusGameEntity } from './motus-game.entity';
+import { MotusPlayerRoundEntity } from './motus-player-round.entity';
 
-
-export class MotusGameEntity {
+@Entity()
+export class MotusRoundEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  motDuJour: boolean;
+  wordIndex: number;
 
-  @CreateDateColumn()
-  createdDate: Date;
+  @Column()
+  word: string;
+
+  @OneToMany(
+    () => MotusPlayerRoundEntity,
+    (roundPlayed: MotusPlayerRoundEntity) => roundPlayed.round,
+  )
+  roundsPlayed: MotusPlayerRoundEntity[];
+
+  @ManyToOne(() => MotusGameEntity, (game: MotusGameEntity) => game.rounds)
+  game: MotusGameEntity;
 }

@@ -25,6 +25,7 @@ export class MotusGameBusinessService {
     nbRound: number | undefined,
   ): Observable<MotusGameDto> {
     return from(
+      // On sauvegarde notre instance de jeu
       this.gameRepository.save({
         dailyGame: dailyGame,
         nbCharMin: nbCharMin,
@@ -33,6 +34,7 @@ export class MotusGameBusinessService {
       }),
     ).pipe(
       switchMap((gameEntity: MotusGameEntity) => {
+        // On génère les mots de notre instance de jeu
         return forkJoin([
           of(gameEntity),
           this.motFacadeService.getRandomWords(
@@ -43,6 +45,7 @@ export class MotusGameBusinessService {
         ]) as Observable<[MotusGameEntity, string[]]>;
       }),
       switchMap(([gameEntity, randomsWords]: [MotusGameEntity, string[]]) => {
+        // On crée nos instance de rounds de jeu
         return forkJoin([
           of(gameEntity),
           from(
@@ -65,6 +68,7 @@ export class MotusGameBusinessService {
           MotusGameEntity,
           MotusRoundEntity[],
         ]) => {
+          // On forme et renvoi le dto
           return this.gameEntityToDto(gameEntity, roundsEntities);
         },
       ),

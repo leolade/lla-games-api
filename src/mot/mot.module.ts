@@ -4,6 +4,6 @@ import { MotFacadeService } from './mot.facade.service';
 
 @Module({
   controllers: [MotController],
-  providers: [MotFacadeService]
+  providers: [MotFacadeService],
 })
 export class MotModule {}

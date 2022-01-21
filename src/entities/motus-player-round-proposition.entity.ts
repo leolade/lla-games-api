@@ -1,17 +1,29 @@
-import { ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { MotusRoundEntity } from './motus-round.entity';
-import { UserEntity } from './user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { MotusPlayerRoundEntity } from './motus-player-round.entity';
 
-export class MotusPlayerRoundEntity {
+@Entity()
+export class MotusPlayerRoundPropositionEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => UserEntity, (user: UserEntity) => user.roundsPlayed)
-  player: UserEntity;
+  @Column()
+  suggestWord: string;
+
+  @Column()
+  encodedValidation: string;
 
   @ManyToOne(
-    (type) => MotusRoundEntity,
-    (round: MotusRoundEntity) => round.roundsPlayed,
+    () => MotusPlayerRoundEntity,
+    (round: MotusPlayerRoundEntity) => round.propositions,
   )
-  round: MotusRoundEntity;
+  round: MotusPlayerRoundEntity;
+
+  @CreateDateColumn()
+  createdDate: Date;
 }

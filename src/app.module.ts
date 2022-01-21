@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 import { MotusGameEntity } from './entities/motus-game.entity';
 import { MotusPlayerRoundPropositionEntity } from './entities/motus-player-round-proposition.entity';
 import { MotusPlayerRoundEntity } from './entities/motus-player-round.entity';
@@ -11,7 +12,6 @@ import { MotModule } from './mot/mot.module';
 import { MotusGameModule } from './motus-game/motus-game.module';
 import { MotusRoundModule } from './motus-round/motus-round.module';
 import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -37,5 +37,4 @@ import { AuthModule } from './auth/auth.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-}
+export class AppModule {}
