@@ -19,7 +19,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "package:windows": "rimraf package && npm run build && mkdir package && xcopy /S /I /Q dist package && copy package.json package && copy dic.txt package && copy dicv2.txt package && xcopy /S /I /Q dictionnaire package"
+    "package:windows": "nest build && rimraf package-back && npm run build && mkdir package-back && xcopy /S /I /Q dist package-back && copy package.json package-back && copy dic.txt package-back && copy dicv2.txt package-back && xcopy /S /I /Q dictionnaire package-back\\dictionnaire"
   },
   "dependencies": {
     "@nestjs/common": "^7.6.15",
