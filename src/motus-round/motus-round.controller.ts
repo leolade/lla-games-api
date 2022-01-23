@@ -45,6 +45,6 @@ export class MotusRoundController {
 
   @Get(':roundId/word')
   getRoundWord(@Param() params): Observable<string> {
-    return this.motusRoundFacadeService.getRoundWord(params.id);
+    return this.motusRoundFacadeService.getRoundWord(params.roundId);
   }
 }
