@@ -1,50 +1,28 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, } from '@nestjs/common';
 import { MotusRoundPropositionValidationDto } from 'lla-party-games-dto/dist/motus-round-proposition-validation.dto';
 import { MotusRoundPropositionDto } from 'lla-party-games-dto/dist/motus-round-proposition.dto';
-import { UserDto } from 'lla-party-games-dto/dist/user.dto';
+import { MotusRoundDto } from 'lla-party-games-dto/dist/motus-round.dto';
 import { Observable } from 'rxjs';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { MotusRoundFacadeService } from './motus-round.facade.service';
 
 @Controller('motus/round')
 export class MotusRoundController {
-  constructor(private motusRoundFacadeService: MotusRoundFacadeService) {}
-
-  @UseGuards(JwtAuthGuard)
-  @Post(':idRoundPlayed/proposition')
-  makeProposition(
-    @Body() proposition: MotusRoundPropositionDto,
-    @Param() params,
-    @Request() request: Request,
-  ): Observable<MotusRoundPropositionValidationDto> {
-    return this.motusRoundFacadeService.makeProposition(
-      proposition,
-      params.id,
-      request['user'] as UserDto,
-    );
+  constructor(private motusRoundFacadeService: MotusRoundFacadeService) {
   }
 
-  @Post('daily-game/proposition')
-  makeDailyGameProposition(
+  @Post(':idRoundPlayed/proposition/unlogged')
+  makePropositionUnlogged(
     @Body() proposition: MotusRoundPropositionDto,
     @Param() params,
   ): Observable<MotusRoundPropositionValidationDto> {
-    return this.motusRoundFacadeService.makeDailyGameProposition(
+    return this.motusRoundFacadeService.makePropositionUnlogged(
       proposition,
-      params.id,
+      params.idRoundPlayed,
     );
   }
 
-  @Get(':roundId/word')
-  getRoundWord(@Param() params): Observable<string> {
-    return this.motusRoundFacadeService.getRoundWord(params.roundId);
+  @Get('/:roundId')
+  getRoundWord(@Param() params): Observable<MotusRoundDto> {
+    return this.motusRoundFacadeService.getRound(params.roundId);
   }
 }

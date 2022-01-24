@@ -1,7 +1,7 @@
 import {
   Body,
   Controller,
-  Get,
+  Get, Param,
   Post,
   Request,
   UseGuards,
@@ -36,6 +36,16 @@ export class UsersController {
         } as UserDto),
       ),
     );
+  }
+
+  @Get('unlogged-token')
+  getUnloggedToken(): Observable<string> {
+    return this.usersFacade.getUnloggedToken();
+  }
+
+  @Get('unlogged-user/:token')
+  getUnloggedUser(@Param() params): Observable<UserDto> {
+    return this.usersFacade.getUnloggedUser(params.token);
   }
 
   @UseGuards(LocalAuthGuard)

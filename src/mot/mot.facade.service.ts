@@ -14,9 +14,12 @@ import { createInterface, Interface } from 'readline';
 import { from, Observable, of } from 'rxjs';
 import { NumberUtils } from 'type-script-utils-lla/dist/number.utils';
 import { StringUtils } from 'type-script-utils-lla/dist/string.utils';
+import { MotBusinessService } from './mot-business/mot-business.service';
 
 @Injectable()
 export class MotFacadeService {
+  constructor(private motBusiness: MotBusinessService) {}
+
   getRandomWords(
     nbLettreMin: number,
     nbLettreMax: number,
@@ -53,48 +56,12 @@ export class MotFacadeService {
   }
 
   validate(validateMotDTO: ValidateMotDto): Observable<string> {
-    let result = '';
-    let motCopy = (' ' + validateMotDTO.motSoumis).slice(1);
-    let motADevinerCopy = (' ' + validateMotDTO.motAValider).slice(1);
-    if (motCopy.length != motADevinerCopy.length) {
-      throw new Error("Les mots n'ont pas la même taille");
-    }
-
-    // On place les lettres bien placés.
-    for (let i = 0; i < motCopy.length; i++) {
-      if (motCopy[i].toUpperCase() === motADevinerCopy[i].toUpperCase()) {
-        result += '+';
-        motCopy = StringUtils.replaceAt(motCopy, '+', i);
-        motADevinerCopy = StringUtils.replaceAt(motADevinerCopy, '+', i);
-      } else {
-        result += '?';
-      }
-    }
-
-    // On place le reste
-    for (let i = 0; i < motCopy.length; i++) {
-      if (!['?', '.', '-', '+'].includes(motCopy[i])) {
-        const indexCorrespondance: number = Array.from(
-          motADevinerCopy,
-        ).findIndex(
-          (char: string) => char.toUpperCase() === motCopy[i].toUpperCase(),
-        );
-        if (indexCorrespondance >= 0) {
-          result = StringUtils.replaceAt(result, '-', i);
-          motCopy = StringUtils.replaceAt(motCopy, '-', i);
-          motADevinerCopy = StringUtils.replaceAt(
-            motADevinerCopy,
-            '-',
-            indexCorrespondance,
-          );
-        } else {
-          result = StringUtils.replaceAt(result, '.', i);
-          motCopy = StringUtils.replaceAt(motCopy, '.', i);
-        }
-      }
-    }
-
-    return of(result);
+    return of(
+      this.motBusiness.validate(
+        validateMotDTO.motAValider,
+        validateMotDTO.motSoumis,
+      ),
+    );
   }
 
   exist(mot: string): Observable<boolean> {

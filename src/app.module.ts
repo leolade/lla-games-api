@@ -7,6 +7,7 @@ import { MotusGameEntity } from './entities/motus-game.entity';
 import { MotusPlayerRoundPropositionEntity } from './entities/motus-player-round-proposition.entity';
 import { MotusPlayerRoundEntity } from './entities/motus-player-round.entity';
 import { MotusRoundEntity } from './entities/motus-round.entity';
+import { UnloggedUserEntity } from './entities/unlogged-user.entity';
 import { UserEntity } from './entities/user.entity';
 import { MotModule } from './mot/mot.module';
 import { MotusGameModule } from './motus-game/motus-game.module';
@@ -20,6 +21,7 @@ import { UsersModule } from './users/users.module';
       url: process.env.PARTY_GAMES_MYSQL_DATABASE_URL,
       entities: [
         UserEntity,
+        UnloggedUserEntity,
         MotusGameEntity,
         MotusPlayerRoundEntity,
         MotusPlayerRoundPropositionEntity,

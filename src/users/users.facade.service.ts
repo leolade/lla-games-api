@@ -3,9 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { compare, hash } from 'bcrypt';
 import { ConnectUserDto } from 'lla-party-games-dto/dist/connect-user.dto';
 import { CreateUserDto } from 'lla-party-games-dto/dist/create-user.dto';
+import { UserDto } from 'lla-party-games-dto/dist/user.dto';
 import { from, Observable, throwError } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { Like, Repository } from 'typeorm';
+import { UnloggedUserEntity } from '../entities/unlogged-user.entity';
 import { UserEntity } from '../entities/user.entity';
 
 @Injectable()
@@ -13,6 +15,8 @@ export class UsersFacadeService {
   constructor(
     @InjectRepository(UserEntity)
     private usersRepository: Repository<UserEntity>,
+    @InjectRepository(UnloggedUserEntity)
+    private unloggedUserRepository: Repository<UnloggedUserEntity>,
   ) {}
 
   hashPassword(password: string): Promise<string> {
@@ -60,6 +64,27 @@ export class UsersFacadeService {
         return from(this.comparePassword(user?.password, password)).pipe(
           map(() => user),
         );
+      }),
+    );
+  }
+
+  getUnloggedToken(): Observable<string> {
+    return from(this.unloggedUserRepository.save({})).pipe(
+      map((unloggedUserEntity: UnloggedUserEntity) => {
+        return unloggedUserEntity.id;
+      }),
+    );
+  }
+
+  getUnloggedUser(token: string): Observable<UserDto> {
+    return from(this.unloggedUserRepository.findOne(token)).pipe(
+      map((unloggedUserEntity: UnloggedUserEntity) => {
+        return {
+          uuid: unloggedUserEntity.id,
+          displayName: unloggedUserEntity.username,
+          administrator: false,
+          username: unloggedUserEntity.username,
+        } as UserDto;
       }),
     );
   }
