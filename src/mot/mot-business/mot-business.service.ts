@@ -49,6 +49,5 @@ export class MotBusinessService {
     }
 
     return result;
-
   }
 }

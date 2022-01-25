@@ -39,6 +39,6 @@ export class MotusRoundPropositionBusinessService {
   }
 
   private validateProposition(suggestWord: string, word: string): string {
-    return this.motBusiness.validate(suggestWord, word);
+    return this.motBusiness.validate(word, suggestWord);
   }
 }
