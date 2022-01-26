@@ -14,7 +14,6 @@ import { MotusGameFacadeService } from './motus-game-facade.service';
   providers: [
     MotusGameFacadeService,
     MotusGameBusinessService,
-    MotFacadeService,
     MotBusinessService,
   ],
 })

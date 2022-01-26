@@ -10,8 +10,16 @@ import { UsersFacadeService } from './users.facade.service';
 import { UserBusinessService } from './user-business.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity, UnloggedUserEntity]), AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([UserEntity, UnloggedUserEntity]),
+    AuthModule,
+  ],
   controllers: [UsersController],
-  providers: [UsersFacadeService, LocalStrategy, JwtStrategy, UserBusinessService],
+  providers: [
+    UsersFacadeService,
+    LocalStrategy,
+    JwtStrategy,
+    UserBusinessService,
+  ],
 })
 export class UsersModule {}

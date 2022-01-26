@@ -6,7 +6,7 @@ export class UnloggedUserEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ default: '', nullable: true})
+  @Column({ default: '', nullable: true })
   username: string;
 
   @OneToMany(

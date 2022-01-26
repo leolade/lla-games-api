@@ -10,8 +10,7 @@ export class MotusRoundBusinessService {
   constructor(
     @InjectRepository(MotusRoundEntity)
     private motusRoundRepository: Repository<MotusRoundEntity>,
-  ) {
-  }
+  ) {}
 
   getRoundById(roundId: string): Observable<MotusRoundEntity> {
     return from(this.motusRoundRepository.findOne(roundId)).pipe(

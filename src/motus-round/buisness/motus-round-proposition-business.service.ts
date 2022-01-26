@@ -6,6 +6,8 @@ import { StringUtils } from 'type-script-utils-lla/dist/string.utils';
 import { Repository } from 'typeorm';
 import { MotusPlayerRoundPropositionEntity } from '../../entities/motus-player-round-proposition.entity';
 import { MotusPlayerRoundEntity } from '../../entities/motus-player-round.entity';
+import { MotusRoundEntity } from '../../entities/motus-round.entity';
+import { UnloggedUserEntity } from '../../entities/unlogged-user.entity';
 import { MotBusinessService } from '../../mot/mot-business/mot-business.service';
 
 @Injectable()
@@ -40,5 +42,21 @@ export class MotusRoundPropositionBusinessService {
 
   private validateProposition(suggestWord: string, word: string): string {
     return this.motBusiness.validate(word, suggestWord);
+  }
+
+  getPropositionsForRoundPlayer(
+    round: MotusPlayerRoundEntity,
+  ): Observable<MotusPlayerRoundPropositionEntity[]> {
+    return from(
+      this.motusPlayerRoundPropositionRepository.find({
+        where: {
+          round: round,
+        },
+        order: {
+          createdDate: 'ASC'
+        },
+        relations: ['round'],
+      }),
+    );
   }
 }

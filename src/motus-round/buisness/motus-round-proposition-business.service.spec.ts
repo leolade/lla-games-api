@@ -9,7 +9,9 @@ describe('MotusRoundPropositionBusinessService', () => {
       providers: [MotusRoundPropositionBusinessService],
     }).compile();
 
-    service = module.get<MotusRoundPropositionBusinessService>(MotusRoundPropositionBusinessService);
+    service = module.get<MotusRoundPropositionBusinessService>(
+      MotusRoundPropositionBusinessService,
+    );
   });
 
   it('should be defined', () => {

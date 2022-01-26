@@ -20,7 +20,7 @@ export class MotusRoundPlayerBusinessService {
   ): Observable<MotusPlayerRoundEntity> {
     return from(
       this.motusRoundPlayerRepository.findOne({
-        relations: ['round', 'unloggedUser'],
+        relations: ['round', 'unloggedUser', 'propositions'],
         where: [
           {
             round: {

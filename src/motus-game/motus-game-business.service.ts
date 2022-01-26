@@ -3,9 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MotusGameDto } from 'lla-party-games-dto/dist/motus-game.dto';
 import { forkJoin, from, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-import { Repository } from 'typeorm';
+import { Raw, Repository } from 'typeorm';
 import { MotusGameEntity } from '../entities/motus-game.entity';
 import { MotusRoundEntity } from '../entities/motus-round.entity';
+import { MotBusinessService } from '../mot/mot-business/mot-business.service';
 import { MotFacadeService } from '../mot/mot.facade.service';
 
 @Injectable()
@@ -15,15 +16,16 @@ export class MotusGameBusinessService {
     private gameRepository: Repository<MotusGameEntity>,
     @InjectRepository(MotusRoundEntity)
     private motusRoundRepository: Repository<MotusRoundEntity>,
-    private motFacadeService: MotFacadeService,
-  ) {}
+    private motBusinessService: MotBusinessService,
+  ) {
+  }
 
   createGame(
     dailyGame: boolean,
     nbCharMin: number | undefined,
     nbCharMax: number | undefined,
     nbRound: number | undefined,
-  ): Observable<MotusGameDto> {
+  ): Observable<MotusGameEntity> {
     return from(
       // On sauvegarde notre instance de jeu
       this.gameRepository.save({
@@ -37,7 +39,7 @@ export class MotusGameBusinessService {
         // On génère les mots de notre instance de jeu
         return forkJoin([
           of(gameEntity),
-          this.motFacadeService.getRandomWords(
+          this.motBusinessService.getRandomWords(
             gameEntity.nbCharMin,
             gameEntity.nbCharMax,
             gameEntity.nbRound,
@@ -68,8 +70,10 @@ export class MotusGameBusinessService {
           MotusGameEntity,
           MotusRoundEntity[],
         ]) => {
-          // On forme et renvoi le dto
-          return this.gameEntityToDto(gameEntity, roundsEntities);
+          return {
+            ...gameEntity,
+            rounds: roundsEntities,
+          };
         },
       ),
     );
@@ -87,5 +91,31 @@ export class MotusGameBusinessService {
       gameId: game.id,
       roundsId: rounds.map((round: MotusRoundEntity) => round.id),
     } as MotusGameDto;
+  }
+
+  getOrCreateDailyGame(): Observable<MotusGameEntity> {
+    return from(
+      this.gameRepository.findOne({
+        where: {
+          dailyGame: true,
+          createdDate: Raw((alias) => `${alias} > :date`, {
+            date: new Date().toISOString().substring(0, 11),
+          }),
+        },
+        relations: ['rounds'],
+      }),
+    ).pipe(
+      switchMap((game: MotusGameEntity | undefined) => {
+        if (!game) {
+          return this.createGame(
+            true,
+            undefined,
+            undefined,
+            1,
+          );
+        }
+        return of(game);
+      })
+    );
   }
 }

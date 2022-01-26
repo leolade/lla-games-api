@@ -30,7 +30,7 @@
     "@types/bcrypt": "^5.0.0",
     "bcrypt": "^5.0.1",
     "csv": "^6.0.5",
-    "lla-party-games-dto": "~1.0.7",
+    "lla-party-games-dto": "~1.0.9",
     "morgan": "^1.10.0",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",

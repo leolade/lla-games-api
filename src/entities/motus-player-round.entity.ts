@@ -15,10 +15,16 @@ export class MotusPlayerRoundEntity {
   )
   propositions: MotusPlayerRoundPropositionEntity[];
 
-  @ManyToOne(() => UserEntity, (user: UserEntity) => user.roundsPlayed, { nullable: true })
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user.roundsPlayed, {
+    nullable: true,
+  })
   player: UserEntity;
 
-  @ManyToOne(() => UnloggedUserEntity, (user: UnloggedUserEntity) => user.roundsPlayed, { nullable: false })
+  @ManyToOne(
+    () => UnloggedUserEntity,
+    (user: UnloggedUserEntity) => user.roundsPlayed,
+    { nullable: false },
+  )
   unloggedUser: UnloggedUserEntity;
 
   @ManyToOne(
