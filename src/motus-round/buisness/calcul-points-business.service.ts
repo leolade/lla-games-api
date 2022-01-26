@@ -50,7 +50,7 @@ export class CalculPointsBusinessService {
           `Lettre ${round.word[index]} bien placé à la proposition ${
             roundFind + 1
           }`,
-          this.POINT_MAX_LETTRE_BIEN_PLACE * ((roundFind + 1) / this.NB_TENTATIVE),
+          this.POINT_MAX_LETTRE_BIEN_PLACE * ((this.NB_TENTATIVE - roundFind + 1)  / this.NB_TENTATIVE),
         ]);
       }
     });
@@ -63,7 +63,7 @@ export class CalculPointsBusinessService {
           `Lettre ${round.word[index]} trouvé à la proposition ${
             roundFind + 1
           }`,
-          this.POINT_MAX_LETTRE_TROUVE * ((roundFind + 1) / this.NB_TENTATIVE),
+          this.POINT_MAX_LETTRE_TROUVE * ((this.NB_TENTATIVE - roundFind + 1) / this.NB_TENTATIVE),
         ]);
       }
     });
@@ -72,7 +72,7 @@ export class CalculPointsBusinessService {
       points.push([
         `Mot trouvé a trouvé à la proposition ${propositions.length}`,
         this.POINT_TROUVE_PREMIER_TOUR *
-          (propositions.length / this.NB_TENTATIVE),
+          ((this.NB_TENTATIVE - propositions.length + 1) / this.NB_TENTATIVE),
       ]);
     }
 
