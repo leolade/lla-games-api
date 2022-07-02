@@ -75,7 +75,7 @@ export class MotBusinessService {
 
     // Quand on a fini de lire, alors on récupères des mots au hasard dans cette liste.
     return from(
-      new Promise<string[]>((resolve, reject) => {
+      new Promise<string[]>((resolve) => {
         rl.on('close', () => {
           resolve(
             this.getItemsAuHasard(mots, nbWords).map((mot: string) => {

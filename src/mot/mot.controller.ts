@@ -30,7 +30,7 @@ export class MotController {
   }
 
   @Get('random')
-  getRandomWord(@Param() params): Observable<string> {
+  getRandomWord(): Observable<string> {
     return this.motFacadeService
       .getRandomWords(5, 9, 1)
       .pipe(map((s: string[]) => s[0]));
@@ -52,12 +52,12 @@ export class MotController {
   }
 
   @Get('fill-dic')
-  fillDic(@Param() params): Observable<void> {
+  fillDic(): Observable<void> {
     return this.motFacadeService.fillDicByLetter();
   }
 
   @Get('incoherence')
-  incoherence(@Param() params): Observable<string[]> {
+  incoherence(): Observable<string[]> {
     return this.motFacadeService.incoherence();
   }
 }

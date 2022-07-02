@@ -12,7 +12,6 @@ import { ValidateMotDto } from 'lla-party-games-dto/dist/validate-mot.dto';
 import path from 'path';
 import { createInterface, Interface } from 'readline';
 import { from, Observable, of } from 'rxjs';
-import { NumberUtils } from 'type-script-utils-lla/dist/number.utils';
 import { StringUtils } from 'type-script-utils-lla/dist/string.utils';
 import { MotBusinessService } from './mot-business/mot-business.service';
 
@@ -70,7 +69,7 @@ export class MotFacadeService {
 
     // On renvoi la valeur de si oui ou non le mot existe
     return from(
-      new Promise<boolean>((resolve, reject) => {
+      new Promise<boolean>((resolve) => {
         rl.on('close', () => {
           resolve(find);
         });
@@ -115,7 +114,7 @@ export class MotFacadeService {
     });
 
     return from(
-      new Promise<void>((resolve, reject) => {
+      new Promise<void>((resolve) => {
         mapStream.forEach((value: WriteStream) => {
           value.end();
         });
@@ -139,7 +138,7 @@ export class MotFacadeService {
       }
     });
     return from(
-      new Promise<string[]>((resolve, reject) => {
+      new Promise<string[]>((resolve) => {
         rl.on('close', () => {
           resolve(mots);
         });
@@ -163,7 +162,7 @@ export class MotFacadeService {
     });
 
     return from(
-      new Promise<boolean>((resolve, reject) => {
+      new Promise<boolean>((resolve) => {
         stream.on('end', function () {
           resolve(find);
         });
