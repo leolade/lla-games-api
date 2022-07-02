@@ -7,8 +7,8 @@ import { MotusGameEntity } from './entities/motus-game.entity';
 import { MotusPlayerRoundPropositionEntity } from './entities/motus-player-round-proposition.entity';
 import { MotusPlayerRoundEntity } from './entities/motus-player-round.entity';
 import { MotusRoundEntity } from './entities/motus-round.entity';
+import { ScoreRoundEntity } from './entities/score-round.entity';
 import { UnloggedUserEntity } from './entities/unlogged-user.entity';
-import { UserEntity } from './entities/user.entity';
 import { MotModule } from './mot/mot.module';
 import { MotusGameModule } from './motus-game/motus-game.module';
 import { MotusRoundModule } from './motus-round/motus-round.module';
@@ -20,21 +20,21 @@ import { UsersModule } from './users/users.module';
       type: 'mysql',
       url: process.env.PARTY_GAMES_MYSQL_DATABASE_URL,
       entities: [
-        UserEntity,
         UnloggedUserEntity,
         MotusGameEntity,
         MotusPlayerRoundEntity,
         MotusPlayerRoundPropositionEntity,
         MotusRoundEntity,
+        ScoreRoundEntity,
       ],
       logging: true,
       synchronize: true,
     }),
-    UsersModule,
     MotModule,
     MotusGameModule,
     MotusRoundModule,
     AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

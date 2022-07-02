@@ -25,6 +25,8 @@ export class MotusRoundEntity {
   )
   roundsPlayed: MotusPlayerRoundEntity[];
 
-  @ManyToOne(() => MotusGameEntity, (game: MotusGameEntity) => game.rounds)
+  @ManyToOne(() => MotusGameEntity, (game: MotusGameEntity) => game.rounds, {
+    onDelete: 'CASCADE',
+  })
   game: MotusGameEntity;
 }

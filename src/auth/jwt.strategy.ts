@@ -9,7 +9,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
+      ignoreExpiration: true,
       secretOrKey: jwtConstants.secret,
     });
   }
@@ -19,6 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       displayName: payload.displayName,
       username: payload.username,
       administrator: payload?.administrator,
+      uuid: payload?.uuid,
     } as UserDto;
   }
 }

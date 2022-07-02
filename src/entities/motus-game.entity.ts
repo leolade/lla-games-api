@@ -2,10 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { MotusRoundEntity } from './motus-round.entity';
+import { UnloggedUserEntity } from './unlogged-user.entity';
 
 @Entity()
 export class MotusGameEntity {
@@ -26,6 +29,10 @@ export class MotusGameEntity {
 
   @OneToMany(() => MotusRoundEntity, (round: MotusRoundEntity) => round.game)
   rounds: MotusRoundEntity[];
+
+  @ManyToMany(() => UnloggedUserEntity, { onDelete: 'CASCADE' })
+  @JoinTable()
+  usersRegistered: UnloggedUserEntity[];
 
   @CreateDateColumn()
   createdDate: Date;

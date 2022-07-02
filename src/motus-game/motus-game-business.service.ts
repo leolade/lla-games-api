@@ -5,9 +5,10 @@ import { forkJoin, from, Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { Raw, Repository } from 'typeorm';
 import { MotusGameEntity } from '../entities/motus-game.entity';
+import { MotusPlayerRoundEntity } from '../entities/motus-player-round.entity';
 import { MotusRoundEntity } from '../entities/motus-round.entity';
+import { UnloggedUserEntity } from '../entities/unlogged-user.entity';
 import { MotBusinessService } from '../mot/mot-business/mot-business.service';
-import { MotFacadeService } from '../mot/mot.facade.service';
 
 @Injectable()
 export class MotusGameBusinessService {
@@ -16,9 +17,12 @@ export class MotusGameBusinessService {
     private gameRepository: Repository<MotusGameEntity>,
     @InjectRepository(MotusRoundEntity)
     private motusRoundRepository: Repository<MotusRoundEntity>,
+    @InjectRepository(UnloggedUserEntity)
+    private unloggedUserRepository: Repository<UnloggedUserEntity>,
+    @InjectRepository(MotusPlayerRoundEntity)
+    private motusPlayerRoundRepository: Repository<MotusPlayerRoundEntity>,
     private motBusinessService: MotBusinessService,
-  ) {
-  }
+  ) {}
 
   createGame(
     dailyGame: boolean,
@@ -107,15 +111,55 @@ export class MotusGameBusinessService {
     ).pipe(
       switchMap((game: MotusGameEntity | undefined) => {
         if (!game) {
-          return this.createGame(
-            true,
-            undefined,
-            undefined,
-            1,
-          );
+          return this.createGame(true, undefined, undefined, 1);
         }
         return of(game);
-      })
+      }),
+    );
+  }
+
+  startGame(gameId: string): Observable<MotusGameDto> {
+    return from(
+      this.gameRepository.findOne(gameId, {
+        relations: ['usersRegistered', 'rounds'],
+      }),
+    ).pipe(
+      switchMap((game: MotusGameEntity) => {
+        const motusPlayerRoundEntityToCreate: MotusPlayerRoundEntity[] = [];
+        game.rounds.forEach((round: MotusRoundEntity) => {
+          game.usersRegistered.forEach((userRegister: UnloggedUserEntity) => {
+            motusPlayerRoundEntityToCreate.push(
+              this.motusPlayerRoundRepository.create({
+                round: round,
+                unloggedUser: userRegister,
+                propositions: [],
+              }),
+            );
+          });
+        });
+        return from(
+          this.motusPlayerRoundRepository.save(motusPlayerRoundEntityToCreate),
+        ).pipe(map(() => this.gameEntityToDto(game)));
+      }),
+    );
+  }
+
+  join(gameId: string, userId: string): Observable<MotusGameDto> {
+    return forkJoin([
+      from(
+        this.gameRepository.findOne(gameId, {
+          relations: ['usersRegistered'],
+        }),
+      ),
+      from(this.unloggedUserRepository.findOne(userId)),
+    ]).pipe(
+      switchMap(([game, user]: [MotusGameEntity, UnloggedUserEntity]) => {
+        game.usersRegistered.push(user);
+        return from(this.gameRepository.save(game));
+      }),
+      map((game: MotusGameEntity) => {
+        return this.gameEntityToDto(game);
+      }),
     );
   }
 }

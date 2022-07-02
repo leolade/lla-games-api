@@ -1,8 +1,15 @@
-import { Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { MotusPlayerRoundPropositionEntity } from './motus-player-round-proposition.entity';
 import { MotusRoundEntity } from './motus-round.entity';
+import { ScoreRoundEntity } from './score-round.entity';
 import { UnloggedUserEntity } from './unlogged-user.entity';
-import { UserEntity } from './user.entity';
 
 @Entity()
 export class MotusPlayerRoundEntity {
@@ -15,21 +22,24 @@ export class MotusPlayerRoundEntity {
   )
   propositions: MotusPlayerRoundPropositionEntity[];
 
-  @ManyToOne(() => UserEntity, (user: UserEntity) => user.roundsPlayed, {
-    nullable: true,
-  })
-  player: UserEntity;
-
   @ManyToOne(
     () => UnloggedUserEntity,
     (user: UnloggedUserEntity) => user.roundsPlayed,
-    { nullable: false },
+    { nullable: false, onDelete: 'CASCADE' },
   )
   unloggedUser: UnloggedUserEntity;
 
   @ManyToOne(
     () => MotusRoundEntity,
     (round: MotusRoundEntity) => round.roundsPlayed,
+    { onDelete: 'CASCADE' },
   )
   round: MotusRoundEntity;
+
+  @OneToOne(
+    () => ScoreRoundEntity,
+    (score: ScoreRoundEntity) => score.playerRound,
+  ) // specify inverse side as a second parameter
+  @JoinColumn()
+  score: ScoreRoundEntity;
 }

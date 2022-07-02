@@ -21,6 +21,7 @@ export class MotusPlayerRoundPropositionEntity {
   @ManyToOne(
     () => MotusPlayerRoundEntity,
     (round: MotusPlayerRoundEntity) => round.propositions,
+    { onDelete: 'CASCADE' },
   )
   round: MotusPlayerRoundEntity;
 

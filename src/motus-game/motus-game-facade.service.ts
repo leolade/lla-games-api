@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MotusGameCreateParamsDto } from 'lla-party-games-dto/dist/motus-game-create-params.dto';
 import { MotusGameDto } from 'lla-party-games-dto/dist/motus-game.dto';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { Repository } from 'typeorm';
 import { MotusGameEntity } from '../entities/motus-game.entity';
 import { MotusRoundEntity } from '../entities/motus-round.entity';
@@ -19,7 +19,10 @@ export class MotusGameFacadeService {
     private motusGameBusinessService: MotusGameBusinessService,
   ) {}
 
-  createGame(gameParams: MotusGameCreateParamsDto): Observable<MotusGameDto> {
+  createGame(
+    gameParams: MotusGameCreateParamsDto,
+    userId: string,
+  ): Observable<MotusGameDto> {
     return this.motusGameBusinessService
       .createGame(
         false,
@@ -28,8 +31,8 @@ export class MotusGameFacadeService {
         gameParams?.nbRound,
       )
       .pipe(
-        map((game: MotusGameEntity) => {
-          return this.motusGameBusinessService.gameEntityToDto(game);
+        switchMap((game: MotusGameEntity) => {
+          return this.joinGame(game.id, userId);
         }),
       );
   }
@@ -40,5 +43,13 @@ export class MotusGameFacadeService {
         return this.motusGameBusinessService.gameEntityToDto(game);
       }),
     );
+  }
+
+  joinGame(gameId: string, userId: string): Observable<MotusGameDto> {
+    return this.motusGameBusinessService.join(gameId, userId);
+  }
+
+  startGame(gameId: string): Observable<MotusGameDto> {
+    return this.motusGameBusinessService.startGame(gameId);
   }
 }

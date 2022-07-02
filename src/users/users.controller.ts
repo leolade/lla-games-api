@@ -4,18 +4,17 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ConnectUserDto } from 'lla-party-games-dto/dist/connect-user.dto';
-import { CreateUserDto } from 'lla-party-games-dto/dist/create-user.dto';
+import { ConnectedUserDto } from 'lla-party-games-dto/dist/connected-user.dto';
+import { UpdateUserNameDto } from 'lla-party-games-dto/dist/update-user-name.dto';
 import { UserDto } from 'lla-party-games-dto/dist/user.dto';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { LocalAuthGuard } from '../auth/local-auth.guard';
-import { UserEntity } from '../entities/user.entity';
 import { UsersFacadeService } from './users.facade.service';
 
 @Controller('users')
@@ -25,51 +24,44 @@ export class UsersController {
     private jwtService: JwtService,
   ) {}
 
-  @Post('register')
-  register(@Body() userDto: CreateUserDto): Observable<string> {
-    return this.usersFacade.register(userDto).pipe(
-      map((user: UserEntity) =>
-        this.jwtService.sign({
-          username: user?.username,
-          displayName: user.displayName,
-          uuid: user.uuid,
-          administrator: user?.administrator,
-        } as UserDto),
-      ),
-    );
+  @Post('user')
+  createUser(): Observable<string> {
+    return this.usersFacade.createUser();
   }
 
-  @Get('unlogged-token')
-  getUnloggedToken(): Observable<string> {
-    return this.usersFacade.getUnloggedToken();
+  @UseGuards(JwtAuthGuard)
+  @Put('user/username')
+  updateUsername(
+    @Body() username: UpdateUserNameDto,
+    @Request() req,
+  ): Observable<UserDto> {
+    return this.usersFacade.saveUserName((req.user as UserDto).uuid, username);
   }
 
-  @Get('unlogged-user/:token')
-  getUnloggedUser(@Param() params): Observable<UserDto> {
-    return this.usersFacade.getUnloggedUser(params.token);
-  }
-
-  @UseGuards(LocalAuthGuard)
-  @Post('login')
-  login(
-    @Body() userDto: ConnectUserDto,
-    @Request() req: Request,
-  ): Observable<string> {
-    return this.usersFacade.validate(userDto?.username, userDto.password).pipe(
-      map((user: UserEntity) =>
-        this.jwtService.sign({
-          username: user?.username,
-          displayName: user.displayName,
-          uuid: user.uuid,
-          administrator: user?.administrator,
-        } as UserDto),
-      ),
+  @Get('user/:userId')
+  getUser(@Param() params): Observable<ConnectedUserDto> {
+    return this.usersFacade.getUnloggedUser(params.userId).pipe(
+      map((user: UserDto) => {
+        return {
+          ...user,
+          token: this.jwtService.sign({
+            username: user?.username,
+            displayName: user.displayName,
+            uuid: user.uuid,
+            administrator: user?.administrator,
+            signOptions: { expiresIn: '1s' },
+          } as UserDto),
+        } as ConnectedUserDto;
+      }),
     );
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('who-am-i')
-  whoAmI(@Request() req) {
-    return req.user;
+  whoAmI(@Request() req): UserDto {
+    return {
+      ...req.user,
+      uuid: undefined,
+    };
   }
 }

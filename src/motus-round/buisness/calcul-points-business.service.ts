@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { from, Observable } from 'rxjs';
+import { Repository } from 'typeorm';
 import { MotusPlayerRoundPropositionEntity } from '../../entities/motus-player-round-proposition.entity';
+import { MotusPlayerRoundEntity } from '../../entities/motus-player-round.entity';
 import { MotusRoundEntity } from '../../entities/motus-round.entity';
+import { ScoreRoundEntity } from '../../entities/score-round.entity';
 
 @Injectable()
 export class CalculPointsBusinessService {
@@ -8,6 +13,11 @@ export class CalculPointsBusinessService {
   private POINT_MAX_LETTRE_TROUVE = 6;
   private POINT_MAX_LETTRE_BIEN_PLACE = 18;
   private NB_TENTATIVE = 6;
+
+  constructor(
+    @InjectRepository(ScoreRoundEntity)
+    private scoreRoundRepository: Repository<ScoreRoundEntity>,
+  ) {}
 
   calculatePoints(
     round: MotusRoundEntity,
@@ -50,7 +60,8 @@ export class CalculPointsBusinessService {
           `Lettre ${round.word[index]} bien placé à la proposition ${
             roundFind + 1
           }`,
-          this.POINT_MAX_LETTRE_BIEN_PLACE * ((this.NB_TENTATIVE - roundFind + 1)  / this.NB_TENTATIVE),
+          this.POINT_MAX_LETTRE_BIEN_PLACE *
+            ((this.NB_TENTATIVE - roundFind + 1) / this.NB_TENTATIVE),
         ]);
       }
     });
@@ -63,7 +74,8 @@ export class CalculPointsBusinessService {
           `Lettre ${round.word[index]} trouvé à la proposition ${
             roundFind + 1
           }`,
-          this.POINT_MAX_LETTRE_TROUVE * ((this.NB_TENTATIVE - roundFind + 1) / this.NB_TENTATIVE),
+          this.POINT_MAX_LETTRE_TROUVE *
+            ((this.NB_TENTATIVE - roundFind + 1) / this.NB_TENTATIVE),
         ]);
       }
     });
@@ -77,12 +89,21 @@ export class CalculPointsBusinessService {
     }
 
     return [
-      points.reduce(
-        (accumulator, [descriptions, points]) => accumulator + points,
-        0,
-      ),
+      points.reduce((accumulator, pointInfo) => accumulator + pointInfo[1], 0),
       points,
     ];
+  }
+
+  saveScore(
+    roundPlayer: MotusPlayerRoundEntity,
+    points: number,
+  ): Observable<ScoreRoundEntity> {
+    return from(
+      this.scoreRoundRepository.save({
+        points: points,
+        playerRound: roundPlayer,
+      }),
+    );
   }
 
   private getRoundParLettreBienPlace(
@@ -93,10 +114,8 @@ export class CalculPointsBusinessService {
     return Array.from(wordUppercased).map((lettre: string, index: number) => {
       const mapIndexPropositionValidationItem: [number, [string, string]] =
         Array.from(mapIndexPropositionValidation).find(
-          ([indexProposition, [proposition, validation]]: [
-            number,
-            [string, string],
-          ]) => {
+          (propositionValidation: [number, [string, string]]) => {
+            const validation = propositionValidation[1][1];
             return validation[index] === '+';
           },
         ) as [number, [string, string]];
@@ -118,10 +137,8 @@ export class CalculPointsBusinessService {
       ).length;
       const mapIndexPropositionValidationItem: [number, [string, string]] =
         Array.from(mapIndexPropositionValidation).find(
-          ([indexProposition, [proposition, validation]]: [
-            number,
-            [string, string],
-          ]) => {
+          (propositionValidation: [number, [string, string]]) => {
+            const proposition = propositionValidation[1][0];
             return (
               (proposition.toUpperCase().match(new RegExp(lettre, 'g')) || [])
                 .length >= compteurOccurenceLettre

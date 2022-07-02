@@ -12,6 +12,7 @@ export class UnloggedUserEntity {
   @OneToMany(
     () => MotusPlayerRoundEntity,
     (roundPlayed: MotusPlayerRoundEntity) => roundPlayed.unloggedUser,
+    { onDelete: 'CASCADE' },
   )
   roundsPlayed: MotusPlayerRoundEntity[];
 }
