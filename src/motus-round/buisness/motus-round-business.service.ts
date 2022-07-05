@@ -13,7 +13,7 @@ export class MotusRoundBusinessService {
   ) {}
 
   getRoundById(roundId: string): Observable<MotusRoundEntity> {
-    return from(this.motusRoundRepository.findOne(roundId)).pipe(
+    return from(this.motusRoundRepository.findOneBy({ id: roundId })).pipe(
       switchMap((round: MotusRoundEntity) => {
         if (!round) {
           return throwError(() => new Error());

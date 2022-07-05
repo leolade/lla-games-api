@@ -69,11 +69,11 @@ export class MotusRoundPlayerBusinessService {
         return of([
           playerRound,
           playerRound.propositions.length === 6 ||
-            playerRound.propositions.some(
+            playerRound.propositions.find(
               (proposition: MotusPlayerRoundPropositionEntity) => {
                 return proposition.encodedValidation
                   .split('')
-                  .some((letter: string) => ['.', '-', '?'].includes(letter));
+                  .some((letter: string) => !['.', '-', '?'].includes(letter));
               },
             ),
         ] as [MotusPlayerRoundEntity, boolean]);

@@ -44,7 +44,9 @@ export class MotusRoundPropositionBusinessService {
     return from(
       this.motusPlayerRoundPropositionRepository.find({
         where: {
-          round: round,
+          round: {
+            id: round.id,
+          },
         },
         order: {
           createdDate: 'ASC',

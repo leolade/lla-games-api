@@ -120,7 +120,10 @@ export class MotusGameBusinessService {
 
   startGame(gameId: string): Observable<MotusGameDto> {
     return from(
-      this.gameRepository.findOne(gameId, {
+      this.gameRepository.findOne({
+        where: {
+          id: gameId,
+        },
         relations: ['usersRegistered', 'rounds'],
       }),
     ).pipe(
@@ -147,11 +150,14 @@ export class MotusGameBusinessService {
   join(gameId: string, userId: string): Observable<MotusGameDto> {
     return forkJoin([
       from(
-        this.gameRepository.findOne(gameId, {
+        this.gameRepository.findOne({
+          where: {
+            id: gameId,
+          },
           relations: ['usersRegistered'],
         }),
       ),
-      from(this.unloggedUserRepository.findOne(userId)),
+      from(this.unloggedUserRepository.findOneBy({ id: userId })),
     ]).pipe(
       switchMap(([game, user]: [MotusGameEntity, UnloggedUserEntity]) => {
         game.usersRegistered.push(user);

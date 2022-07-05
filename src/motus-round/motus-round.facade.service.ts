@@ -201,10 +201,14 @@ export class MotusRoundFacadeService {
     playerUuid: string,
   ): Observable<MotusRoundRankDto[]> {
     return this.classementRoundBusinessService.getClassement(roundId).pipe(
-      map((values: [ScoreRoundEntity, UnloggedUserEntity][]) => {
+      map((values: [ScoreRoundEntity, UnloggedUserEntity, boolean][]) => {
         return values.map(
           (
-            [score, user]: [ScoreRoundEntity, UnloggedUserEntity],
+            [score, user, success]: [
+              ScoreRoundEntity,
+              UnloggedUserEntity,
+              boolean,
+            ],
             index: number,
           ) => {
             return {
@@ -214,6 +218,7 @@ export class MotusRoundFacadeService {
               playerName: user.username,
               nbProposition: score.playerRound.propositions.length,
               rank: index + 1,
+              success: success,
             } as MotusRoundRankDto;
           },
         );
@@ -224,16 +229,7 @@ export class MotusRoundFacadeService {
   private doRoundEndActions(
     playerRoundId: string,
   ): Observable<[ScoreRoundEntity, [number, [string, number][]]]> {
-    return this.motusRoundPlayerBusinessService
-      .isRoundEnded(playerRoundId)
-      .pipe(
-        switchMap((roundEndedInfo: [MotusPlayerRoundEntity, boolean]) => {
-          if (roundEndedInfo[1]) {
-            return this.savePointsFromPlayerRoundId(playerRoundId);
-          }
-          return of(undefined);
-        }),
-      );
+    return this.savePointsFromPlayerRoundId(playerRoundId);
   }
 
   private savePointsFromPlayerRoundId(

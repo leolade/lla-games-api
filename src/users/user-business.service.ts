@@ -13,7 +13,7 @@ export class UserBusinessService {
   ) {}
 
   getUnloggedUser(uuid: string): Observable<UnloggedUserEntity> {
-    return from(this.unloggedUserRepository.findOne(uuid)).pipe(
+    return from(this.unloggedUserRepository.findOneBy({ id: uuid })).pipe(
       switchMap((user: UnloggedUserEntity | undefined) => {
         if (!user) {
           return throwError(() => new Error('Utilisateur inconnu'));
@@ -25,7 +25,7 @@ export class UserBusinessService {
   }
 
   saveUserName(uuid: string, username: string): Observable<UnloggedUserEntity> {
-    return from(this.unloggedUserRepository.findOne(uuid)).pipe(
+    return from(this.unloggedUserRepository.findOneBy({ id: uuid })).pipe(
       switchMap((user: UnloggedUserEntity | undefined) => {
         if (!user) {
           return throwError(() => new Error('Utilisateur inconnu'));

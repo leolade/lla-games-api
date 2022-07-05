@@ -15,7 +15,7 @@ export class ClassementRoundBusinessService {
 
   getClassement(
     roundId: string,
-  ): Observable<[ScoreRoundEntity, UnloggedUserEntity][]> {
+  ): Observable<[ScoreRoundEntity, UnloggedUserEntity, boolean][]> {
     return from(
       this.scoreRoundRepository.find({
         relations: [
@@ -29,10 +29,27 @@ export class ClassementRoundBusinessService {
       }),
     ).pipe(
       map((scores: ScoreRoundEntity[]) => {
-        return scores.map((score: ScoreRoundEntity) => {
-          return [score, score.playerRound.unloggedUser];
-        });
+        return scores
+          .filter((score) => {
+            return (
+              score.playerRound.propositions.length === 6 ||
+              ClassementRoundBusinessService.isScoreSuccess(score)
+            );
+          })
+          .map((score: ScoreRoundEntity) => {
+            return [
+              score,
+              score.playerRound.unloggedUser,
+              ClassementRoundBusinessService.isScoreSuccess(score),
+            ];
+          });
       }),
+    );
+  }
+
+  private static isScoreSuccess(score: ScoreRoundEntity): boolean {
+    return score.playerRound.propositions.some((proposition) =>
+      proposition.encodedValidation.split('').every((letter) => letter === '+'),
     );
   }
 }
