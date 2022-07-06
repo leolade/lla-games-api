@@ -6,7 +6,7 @@ Une API permettant de centraliser divers informations pour divers jeu (à ce jou
 
 Prérequis
 ```
-  Installer Node12 
+  Installer Node14
   Installer MySQL Server 5.6
   Créer une base de données sur MySQL (le nom est à garder et à renseigner dans la variable d'environnement plus bas)
 ```
